@@ -1,3 +1,12 @@
+/**
+ * Generates HTML elements dynamically based on the data in the `products` array.
+ * Handles adding products to a shopping cart and displaying a notification when a product is added.
+ *
+ * @param {Array} products - An array of objects representing the products.
+ * @param {Array} cart - An array representing the shopping cart.
+ * @returns {void}
+ */
+
 // We are loading data from the `./data/products.js` file which contains
 // all the products we have in store for the project
 
@@ -31,7 +40,7 @@ products.forEach((product) => {
         </div>
 
         <div class="product-quantity-container">
-          <select>
+          <select class="quantity-selector-${product.id}">
             <option selected value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -47,7 +56,7 @@ products.forEach((product) => {
 
         <div class="product-spacer"></div>
 
-        <div class="added-to-cart">
+        <div class="added-to-cart added-to-cart-${product.id}">
           <img alt="product-image" src="images/icons/checkmark.png">
           Added
         </div>
@@ -64,11 +73,21 @@ products.forEach((product) => {
 // display the results on the webpage using a query selector
 document.querySelector('.js-products-grid').innerHTML = productHtml;
 
+const messageTimeouts = {};
+
 // add interactivity
 document.querySelectorAll('.add-to-cart').forEach((button) => {
+  /* 
+  Each time we run the loop, it will create
+  a new variable called addedMessageTimeoutId and do
+  button.addEventListener().
+  
+  */
+  let messageTimeoutsId;
+
   button.addEventListener('click', () => {
     // this tells the server which item to add to the cart
-    const productId = button.dataset.productId;
+    const { productId } = button.dataset;
 
     let matchingItem;
 
@@ -79,14 +98,21 @@ document.querySelectorAll('.add-to-cart').forEach((button) => {
       }
     });
 
+    const quantitySelector = document.querySelector(
+      `.quantity-selector-${productId}`
+    );
+
+    // get the value of the class and convert it to a number
+    const quantity = Number(quantitySelector.value);
+
     // if already in cart, increase the qty
     if (matchingItem) {
-      matchingItem.quantity += 1;
+      matchingItem.quantity += quantity; // update the cart using this value
     } else {
       // if not, add it
       cart.push({
-        productId: productId,
-        quantity: 1,
+        productId,
+        quantity, // update the cart with this new value
       });
     }
 
@@ -98,5 +124,26 @@ document.querySelectorAll('.add-to-cart').forEach((button) => {
     });
 
     document.querySelector('.js-cart-qty').innerHTML = cartQuantity;
+
+    // notify the user that the product is added to the cart
+    const message = document.querySelector(`.added-to-cart-${productId}`);
+
+    // add a class to make the message visible
+    message.classList.add('added-to-cart-visible');
+
+    // remove the class after 2seconds
+
+    // check if there's a previous timeout for this product.
+    const previousTimeoutId = messageTimeouts[productId];
+    if (previousTimeoutId) {
+      clearTimeout(previousTimeoutId);
+    }
+
+    const timeoutId = setTimeout(() => {
+      message.classList.remove('added-to-cart-visible');
+    }, 2000);
+
+    //save the timeoutId for the porduct so we can stop it later
+    messageTimeouts[productId] = timeoutId;
   });
 });
