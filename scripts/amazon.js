@@ -90,6 +90,13 @@ document.querySelectorAll('.add-to-cart').forEach((button) => {
       });
     }
 
-    console.log(cart);
+    // calculate the total qty
+    let cartQuantity = 0;
+
+    cart.forEach((item) => {
+      cartQuantity += item.quantity;
+    });
+
+    document.querySelector('.js-cart-qty').innerHTML = cartQuantity;
   });
 });
