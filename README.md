@@ -23,4 +23,12 @@ The website uses the following technologies: HTML, CSS & Javascript.
 - Books are saved locally so they don't need to reappear when the browser refreshes/reloads (localStorage);
   Note:
   Amazon API Key - This application requires access to the Amazon Product Advertising API in order to fetch book data. You must provide your own
+  
+  <!--
+  TODO:
+  1. Add functionality to increase / decrease quantity of items in cart.
+  2. Provide the link to the deployed application.
+  -->
+
+  // FIXME: link to the deployed app.
   If you want to see this site working properly please visit <https://jesar-enl.github.io/amazon/>.
